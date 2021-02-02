@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block main %}
+
+<div class="card">
+    <div class="card-body">
+        This is some text within a card body.
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th width="5%" scope="row">1</th>
+                <td width="32.5%" class="home-team">Manchester United<img src="mun.png"
+                        style="height:30px; margin-left: 20px;"></td>
+                <td width="25%" class="match-time">9:00</td>
+                <td width="37.5%"><img src="barca.png" style="height:30px; margin-right:20px;">Barcelona</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td class="home-team">Jacob</td>
+                <td class="match-time">9:00</td>
+                <td>@fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td class="home-team">Larry</td>
+                <td class="match-time">9:00</td>
+                <td>@twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

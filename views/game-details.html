@@ -1,0 +1,103 @@
+{% extends "base.html" %} {% block main %}
+
+<div hidden="true" id="game-id">
+    {{ game_id }}
+</div>
+
+<div class="container-fluid" id="game-details">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 style="text-align: center; " class="display-5">
+                <span id="home-team">{{ home_team }}</span>
+                <!-- <img style="height: 50px; margin-right: 30px; margin-left: 30px;" src="../static/images/barca.png"> -->
+                <span style="font-size: large;">vs.</span>
+                <!-- <img style="height: 50px; margin-left: 30px; margin-right: 30px;" src="../static/images/barca.png"> -->
+                <span id="away-team">{{ away_team }}</span>
+            </h1>
+
+            <!-- <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p> -->
+        </div>
+    </div>
+    <div class="container">
+        <div class="list-group">
+            <div v-for="record in goals_and_cards_records" class="list-group-item" :style="{
+                direction: record.direction, 
+                display: recordsStyle.display, 
+                'grid-template-columns': recordsStyle['grid-template-columns'],
+                'justify-content': recordsStyle['justify-content'],
+                'align-item': recordsStyle['align-item']
+            }">
+                <span><strong v-text="record.minutes"></strong><strong>'</strong></span>
+                <span v-if="record.event==0"><img style="height: 20px; margin-bottom: 5px;" src="../static/images/goal.png"></span>
+                <span v-if="record.event==2"><img style="height: 20px; margin-bottom: 5px;" src="../static/images/yellow_card.png"></span>
+                <span v-if="record.event==3"><img style="height: 20px; margin-bottom: 5px;" src="../static/images/red_card.png"></span>
+                <span v-text="getAssistString(record)">Harry kane</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vm = new Vue({
+        el: '#game-details',
+        data: {
+            goals_and_cards_records: [],
+            records: [],
+            recordsStyle: {
+                display: 'grid',
+                'grid-template-columns': '30px 30px auto',
+                'justify-content': 'start',
+                'align-item': 'center'
+            }
+        },
+        methods: {
+            getAssistString: function(record) {
+                console.log('getAssistString');
+                console.log(record);
+                for(var r of this.records) {
+                    console.log(r.event);
+                    console.log(r.minutes);
+                    if(r.event == 1 && r.minutes == record.minutes) {
+                        return record.player_name + '(  assist by ' + r.player_name + '  )';
+                    }
+                }
+                console.log('not match');
+                return '  ' + record.player_name + ' ';
+            }
+        }
+    })
+
+    $(function() {
+        var home_team = $('#home-team').text().trim();
+        var away_team = $('#away-team').text().trim();
+        console.log(home_team);
+        console.log(away_team);
+        var ajax1 = $.get('/fetch/game-records/' + parseInt($('#game-id').text())).done(data => {
+            data.records.forEach(element => {
+                if(element.club == home_team) {
+                    console.log('match');
+                    element.direction = 'ltr';
+                }
+                else if(element.club == away_team) {
+                    console.log('match rtl');
+                    element.direction = 'rtl';
+                }
+                vm.records.push(element);
+            });
+
+            vm.records.filter(element => {
+                return element.event != 1;
+            }).forEach(element => {
+                vm.goals_and_cards_records.push(element);
+            })
+
+            vm.goals_and_cards_records.sort(function (a, b) {
+                if(a.minutes > b.minutes) return 1;
+                else if(a.minutes == b.minutes) return 0;
+                else return -1;
+            })
+        });
+    })
+</script>
+    
+{% endblock %}

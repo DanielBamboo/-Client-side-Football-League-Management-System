@@ -1,0 +1,68 @@
+{% extends "base.html" %} {% block main %}
+
+<div hidden="true">{{season_name}}</div>
+
+<div class="container" id="games">
+    <div class="list-group" id="game_list">
+        <a :href="getHrefString(game)" :turn="game.turn" v-for="game in games" style="display: grid; text-align: center; grid-template-columns: 40% 20% 40%;" class="list-group-item list-group-item-action">
+            <span v-text="game.home_team">Home_team</span>
+            <span v-text="getResultString(game)">1:0</span>
+            <span v-text="game.away_team">Away_team</span>
+        </a>
+    </div>
+</div>
+    
+<script>
+    var vm = new Vue({
+        el: '#games',
+        data: {
+            games: []
+        },
+        methods: {
+            getResultString(game) {
+                if(game.home_team_goal == null) {
+                    return game.matchday;
+                }
+                return game.home_team_goal + ' : ' + game.away_team_goal;
+            },
+            getHrefString(game) {
+                var string = '/game/' + game.id + '_' + game.home_team + '_' + game.away_team;
+                var string = string.replace(' ', '-');
+                return string;
+            }
+        }
+    });
+
+    $(function() {
+        var ajax1 = $.get('/fetch/games').done(data => {
+            for(var i = 0; i < data.games.length; i++) {
+                vm.games.push(data.games[i]);
+            }
+        });
+
+        $.when(ajax1).done(function() {
+            var games = document.getElementsByClassName('list-group-item');
+            // console.log(games[0].getAttribute('turn'));
+            // var games = $('.list-group-item');
+            // console.log(games[0].getAttribute('turn'));
+            // for(var i = 0; i < games.length; i++) {
+            //     if(i == 0 || games[i].getAttribute('turn') != games[i-1].getAttribute('turn')) {
+            //         var date_stamp = document.createElement('div');
+            //         var date_stamp_content = 'turn' + document.createTextNode(games[i].getAttribute('turn'));
+            //         date_stamp.appendChild(date_stamp_content);
+            //         games[0].insertBefore(date_stamp);
+            //     }
+            // }
+
+            var value_before = null;
+            $('.list-group-item').each(function() {
+                if(value_before == null || $(this).attr('turn') != value_before) {
+                    $(this).before('<div class="list-group-item active">Turn: ' + $(this).attr('turn') + '</div>');
+                }
+                value_before = $(this).attr('turn');
+            })
+        })
+    })
+</script>
+
+{% endblock %}

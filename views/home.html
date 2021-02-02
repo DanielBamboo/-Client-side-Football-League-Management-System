@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block main %}
+<div class="container" id="welcome">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">欢迎</h1>
+            <p class="lead">在这里，你可以浏览英国联赛的实时数据，包括了排行榜，比赛日程以及球员数据</p>
+            <p class="lead">请选择您想访问的联赛/赛季</p>
+
+            <p v-for="season in seasons" class="lead">
+                <a class="btn btn-primary btn-lg" :href="getUrlFromSeasonName(season.season_name)" role="button" v-text="season.season_name">Premier League</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vm = new Vue({
+        el: '#welcome',
+        data: {
+            seasons: []
+        },
+        methods: {
+            getUrlFromSeasonName: function(season_name) {
+                // season_name = season_name.replace(' ', '_');
+                // season_name = season_name.replace('/', '&');
+                return 'season/' + encodeURIComponent(season_name);
+            }
+        }
+    })
+
+    $(function() {
+        $.get('/fetch/seasons').done(data => {
+            data.seasons.forEach(element => {
+                vm.seasons.push(element);
+            })
+        })
+
+        $('.nav-item').hide();
+        $('#nav-name').hide();
+    })
+</script>
+
+{% endblock %}

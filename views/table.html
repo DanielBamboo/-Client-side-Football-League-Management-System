@@ -1,0 +1,66 @@
+{% extends "base.html" %} {% block main %}
+
+<div class="container-fluid" id="table">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col-lg">#</th>
+                <th scope="col-lg-8">team</th>
+                <th scope="col">W</th>
+                <th scope="col">D</th>
+                <th scope="col">L</th>
+                <th scope="col">+/-</th>
+                <th scope="col">P</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(club_record,index) in club_records">
+                <th scope="row" v-text="index+1"></th>
+                <td v-text="club_record.club_name"></td>
+                <td v-text="club_record.wins"></td>
+                <td v-text="club_record.draws"></td>
+                <td v-text="club_record.loses"></td>
+                <td v-text="getGoalDifference(club_record)"></td>
+                <td v-text="club_record.points"></td>
+            </tr>
+            <!-- <tr style="display: grid; direction: rtl; grid-template-columns: 10% 10% 40% 40%;">
+                <th scope="row">2</th>
+                <td style="float: right;">Jacob</td>
+                <td style="float: right;">Thornton</td>
+                <td style="float: right;">@fat</td>
+            </tr>
+            <tr style="display: grid; direction: ltr; grid-template-columns: 10% 10% 40% 40%;">
+                <th scope="row">3</th>
+                <td>Larry</td>
+                <td>the Bird</td>
+                <td>@twitter</td>
+            </tr> -->
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    var vm = new Vue({
+        el: '#table',
+        data: {
+            club_records: []
+        },
+        methods: {
+            getGoalDifference(club_record) {
+                return club_record.goals + '/' + club_record.lose_goals;
+            }
+        }
+    });
+
+    $(function () {
+        $.get('/fetch/current-season-table').done(data => {
+            console.log(data);
+            for (var i = 0; i < data.club_records.length; i++) {
+                vm.club_records.push(data.club_records[i]);
+            }
+        })
+    })
+</script>
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block main %}
+<div class="container" id="stats">
+    <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
+                aria-controls="pills-home" aria-selected="true">射手榜</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
+                aria-controls="pills-profile" aria-selected="false">助攻榜</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            <div id="goal-list">
+                <div class="list-group">
+                    <div  class="list-group-item active" style="text-align: center; display: grid; grid-template-columns: 50% 30% 20%;">
+                        <span>Name</span>
+                        <span>Club</span>
+                        <span>Goal</span>
+                    </div>
+                    <div :player_id="item.player_id" v-for="item in goal_list" style="text-align: center; display: grid; grid-template-columns: 50% 30% 20%;" class="list-group-item list-group-item-action">
+                        <span v-text="item.player_name">Harry Kane</span>
+                        <span v-text="item.club">Hotspot</span>
+                        <span v-text="item.goal">7</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            <div id="assist-list">
+                <div class="list-group">
+                    <div class="list-group-item active" style="text-align: center; display: grid; grid-template-columns: 50% 30% 20%;">
+                        <span>Name</span>
+                        <span>Club</span>
+                        <span>Assist</span>
+                    </div>
+                    <div :player_id="item.player_id" v-for="item in assist_list" style="text-align: center; display: grid; grid-template-columns: 50% 30% 20%;" class="list-group-item list-group-item-action">
+                        <span v-text="item.player_name">Harry Kane</span>
+                        <span v-text="item.club">Hotspot</span>
+                        <span v-text="item.assist">7</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        console.log(e.target);
+        console.log(e.relatedTarget);
+    })
+</script>
+
+<script>
+    var vm = new Vue({
+        el: '#stats',
+        data: {
+            goal_list: [],
+            assist_list: []
+        }
+    });
+
+    $(function() {
+        $.get('/fetch/player-stats').done(data => {
+            console.log(data.player_stats);
+            data.player_stats.forEach(element => {
+                vm.goal_list.push({
+                    player_id: element.id,
+                    player_name: element.player_name,
+                    club: element.club,
+                    goal: element.player_records[0].goal
+                });
+                vm.goal_list.sort((a, b) => {
+                    if(a.goal < b.goal) return 1;
+                    else if(a.goal == b.goal) return 0;
+                    else return -1;
+                })
+                vm.assist_list.push({
+                    player_id: element.id,
+                    player_name: element.player_name,
+                    club: element.club,
+                    assist: element.player_records[0].assist
+                });
+                vm.assist_list.sort((a, b) => {
+                    if(a.assist < b.assist) return 1;
+                    else if(a.assist == b.assist) return 0;
+                    else return -1;
+                })
+            })
+        })
+    })
+</script>
+
+
+{% endblock %}

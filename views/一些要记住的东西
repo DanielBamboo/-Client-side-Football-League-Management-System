@@ -1,0 +1,4 @@
+
+    <nav width="5%" class="navbar fixed-bottom navbar-light bg-light">
+        <a style="color:black;" href="control panel">Control Panel</a>
+    </nav>

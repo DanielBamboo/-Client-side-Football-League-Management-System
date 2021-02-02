@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block main %}
+
+<p hidden="true" id="id"></p>
+<div class="jumbotron jumbotron-fluid">
+    <h1 style="text-align: center;" class="display-4"></h1>
+</div>
+
+<script>
+    $.get('/fetch/user-choosed-season').done(data => {
+        $('h1').text(data.season);
+    })
+</script>
+    
+{% endblock %}
